@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A GitHub Action that implements a job queue with a concurrency lock by using Git empty commits">
+    
+    <link rel="canonical" href="https://nautilus-cyberneering.github.io/git-queue/">
+    <link rel="shortcut icon" href="img/favicon.ico">
+
+    
+    <title>Home - Git Queue</title>
+    
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/v4-shims.css">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hack-font@3.3.0/build/web/hack.min.css">
+    <link href='//rsms.me/inter/inter.css' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,700italic,400,300,600,700&subset=latin-ext,latin' rel='stylesheet' type='text/css'>
+    <link href="css/bootstrap-custom.min.css" rel="stylesheet">
+    <link href="css/base.min.css" rel="stylesheet">
+    <link href="css/cinder.min.css" rel="stylesheet">
+
+    
+        
+        <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/styles/github.min.css">
+        
+    
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+            <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+        <![endif]-->
+
+    
+
+     
+</head>
+
+<body class="homepage" >
+
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+
+        <!-- Collapsed navigation -->
+        <div class="navbar-header">
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            
+
+            <!-- Main title -->
+
+            
+              <a class="navbar-brand" href=".">Git Queue</a>
+            
+        </div>
+
+        <!-- Expanded navigation -->
+        <div class="navbar-collapse collapse">
+                <!-- Main navigation -->
+                <ul class="nav navbar-nav">
+                
+                
+                    <li class="active">
+                        <a href=".">Home</a>
+                    </li>
+                
+                
+                
+                    <li >
+                        <a href="use/">Use</a>
+                    </li>
+                
+                
+                
+                    <li >
+                        <a href="development/">Development</a>
+                    </li>
+                
+                
+                
+                    <li >
+                        <a href="glossary/">Glossary</a>
+                    </li>
+                
+                
+                </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                            <i class="fas fa-search"></i> Search
+                        </a>
+                    </li>
+                    <li class="disabled">
+                        <a rel="prev" >
+                            <i class="fas fa-arrow-left"></i> Previous
+                        </a>
+                    </li>
+                    <li >
+                        <a rel="next" href="use/">
+                            Next <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/Nautilus-Cyberneering/git-queue/edit/main/docs/index.md"><i class="fab fa-github"></i> Edit on GitHub</a>
+                    </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+    <div class="container">
+        
+        
+        <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+        <li class="first-level active"><a href="#git-queue-documentation">Git Queue Documentation</a></li>
+            <li class="second-level"><a href="#use-case">Use case</a></li>
+                
+            <li class="second-level"><a href="#credits">Credits</a></li>
+                
+            <li class="second-level"><a href="#license">License</a></li>
+                
+            <li class="second-level"><a href="#projects-using-git-queue">Projects using Git Queue</a></li>
+                
+    </ul>
+</div></div>
+        <div class="col-md-9" role="main">
+
+<h1 id="git-queue-documentation">Git Queue Documentation</h1>
+<!-- markdownlint-disable-next-line MD013 -->
+<p><a href="https://github.com/Nautilus-Cyberneering/git-queue/actions/workflows/check-dist.yml"><img alt="Check dist/" src="https://github.com/Nautilus-Cyberneering/git-queue/actions/workflows/check-dist.yml/badge.svg" /></a> <a href="https://github.com/Nautilus-Cyberneering/git-queue/actions/workflows/mega-linter.yml"><img alt="MegaLinter" src="https://github.com/Nautilus-Cyberneering/git-queue/actions/workflows/mega-linter.yml/badge.svg" /></a> <a href="https://github.com/Nautilus-Cyberneering/git-queue/actions/workflows/test.yml"><img alt="Test" src="https://github.com/Nautilus-Cyberneering/git-queue/actions/workflows/test.yml/badge.svg" /></a> <a href="https://github.com/Nautilus-Cyberneering/git-queue/actions/workflows/test-build.yml"><img alt="Test build" src="https://github.com/Nautilus-Cyberneering/git-queue/actions/workflows/test-build.yml/badge.svg" /></a></p>
+<p><strong>A GitHub Action to handle job queues stored in Git</strong>.</p>
+<p>Welcome to the Git Queue documentation for the <a href="https://github.com/Nautilus-Cyberneering/git-queue">Git Queue - GitHub Action</a>.</p>
+<blockquote>
+<p>Git Queue is a job queue with concurrency optimistic lock mechanism to guarantee job execution order (by updating the job state), implemented with a event sourcing approach, using empty git commits as the event store. Currently with one pending-to-process job limit.</p>
+</blockquote>
+<p>This is how  <code>git log</code> looks when you use the queue:</p>
+<p><img alt="Sequence diagram" src="images/git-log-screenshot.png" /></p>
+<p>The queue has the following characteristics:</p>
+<ul>
+<li>It only allows processing one pending job at the same time.</li>
+<li>Jobs are done by GitHub workflows intended to create git commits and merge them into target branches.</li>
+<li>It provides an optimistic locking mechanism to guarantee that commits are merged in a mutual exclusion way, avoiding duplicate commits. When the queue accepts more than one active job (not finished) it will also guarantee the execution order.</li>
+</ul>
+<p>And features:</p>
+<ul>
+<li>More than one pending job.</li>
+<li>Log job execution: <code>start-job</code>, <code>finish-job</code>.</li>
+<li>Custom payload for queue commands.</li>
+</ul>
+<p>Check the <a href="https://github.com/Nautilus-Cyberneering/git-queue/issues/6">Roadmap</a> for upcoming features.</p>
+<h2 id="use-case">Use case</h2>
+<p>One comment use case is updating a submodule in a project when the submodule repository is updated.</p>
+<ul>
+<li>You have two Git repositories: <code>R1</code> and <code>R2</code>.</li>
+<li><code>R1</code> is a submodule of <code>R2</code>.</li>
+<li>When a new commit is added to the main branch in <code>R1</code> you want to update the submodule in <code>R2</code>.</li>
+<li>You have a scheduled workflow <code>W</code> in <code>R2</code> to import the latest changes from <code>R1</code>.</li>
+</ul>
+<p><img alt="Sequence diagram" src="images/sequence-diagram.svg" /></p>
+<ul>
+<li><code>T1</code>. Add a new file to the library (<code>1.txt</code>)</li>
+<li><code>T2</code>. We run <code>W1</code> to update the library, however, for some reason, this process takes more than 10 minutes.</li>
+<li><code>T3</code>. We modify file <code>1.txt</code> in the library.</li>
+<li><code>T4</code>. (T2+10") We run a second workflow <code>W2</code> to update the library.</li>
+<li><code>T5</code>. The workflow <code>W2</code> finishes and creates a commit with the second version of file <code>1.txt</code>.</li>
+<li><code>T6</code>. The workflow <code>W1</code> finishes and overwrites the first version of file <code>1.</code>txt`.</li>
+</ul>
+<h2 id="credits">Credits</h2>
+<p>Original idea by <a href="https://github.com/da2ce7">Cameron Garnham</a>.</p>
+<p>The <a href="https://github.com/Nautilus-Cyberneering/git-queue/blob/main/src/__tests__/gpg.ts">gpg.ts</a> and <a href="https://github.com/Nautilus-Cyberneering/git-queue/blob/main/src/__tests__/openpgp.ts">openpgp.ts</a> files were originally copied from this <a href="https://github.com/crazy-max/ghaction-import-gpg">GitHub Action repository</a>.</p>
+<h2 id="license">License</h2>
+<p>MIT. See <a href="https://github.com/Nautilus-Cyberneering/git-queue/blob/main/LICENSE">LICENSE</a> for more details.</p>
+<h2 id="projects-using-git-queue">Projects using Git Queue</h2>
+<ul>
+<li><a href="https://github.com/Nautilus-Cyberneering/chinese-ideographs-website">Chinese Ideographs Website</a></li>
+</ul></div>
+        
+        
+    </div>
+
+    
+      <footer class="col-md-12 text-center">
+          
+          
+            <hr>
+            <p>
+            <small>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</small>
+            </p>
+          
+
+          
+          
+      </footer>
+    
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="js/bootstrap-3.0.3.min.js"></script>
+
+    
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/highlight.min.js"></script>
+        
+    <script>hljs.initHighlightingOnLoad();</script>
+    
+
+    <script>var base_url = "."</script>
+    
+    <script src="js/base.js"></script>
+    <script src="search/main.js"></script>
+
+    <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                    <span class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    From here you can search these documents. Enter
+                    your search terms below.
+                </p>
+                <form>
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+    </body>
+
+</html>
+
+<!--
+MkDocs version : 1.3.1
+Build Date UTC : 2022-07-26 12:31:59.911454+00:00
+-->

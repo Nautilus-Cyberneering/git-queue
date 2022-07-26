@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A GitHub Action that implements a job queue with a concurrency lock by using Git empty commits">
+    
+    <link rel="canonical" href="https://nautilus-cyberneering.github.io/git-queue/development/">
+    <link rel="shortcut icon" href="../img/favicon.ico">
+
+    
+    <title>Development - Git Queue</title>
+    
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/v4-shims.css">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hack-font@3.3.0/build/web/hack.min.css">
+    <link href='//rsms.me/inter/inter.css' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,700italic,400,300,600,700&subset=latin-ext,latin' rel='stylesheet' type='text/css'>
+    <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
+    <link href="../css/base.min.css" rel="stylesheet">
+    <link href="../css/cinder.min.css" rel="stylesheet">
+
+    
+        
+        <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/styles/github.min.css">
+        
+    
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+            <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+        <![endif]-->
+
+    
+
+     
+</head>
+
+<body>
+
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+
+        <!-- Collapsed navigation -->
+        <div class="navbar-header">
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            
+
+            <!-- Main title -->
+
+            
+              <a class="navbar-brand" href="..">Git Queue</a>
+            
+        </div>
+
+        <!-- Expanded navigation -->
+        <div class="navbar-collapse collapse">
+                <!-- Main navigation -->
+                <ul class="nav navbar-nav">
+                
+                
+                    <li >
+                        <a href="..">Home</a>
+                    </li>
+                
+                
+                
+                    <li >
+                        <a href="../use/">Use</a>
+                    </li>
+                
+                
+                
+                    <li class="active">
+                        <a href="./">Development</a>
+                    </li>
+                
+                
+                
+                    <li >
+                        <a href="../glossary/">Glossary</a>
+                    </li>
+                
+                
+                </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                            <i class="fas fa-search"></i> Search
+                        </a>
+                    </li>
+                    <li >
+                        <a rel="prev" href="../use/">
+                            <i class="fas fa-arrow-left"></i> Previous
+                        </a>
+                    </li>
+                    <li >
+                        <a rel="next" href="../glossary/">
+                            Next <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/Nautilus-Cyberneering/git-queue/edit/main/docs/development.md"><i class="fab fa-github"></i> Edit on GitHub</a>
+                    </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+    <div class="container">
+        
+        
+        <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+        <li class="first-level active"><a href="#development">Development</a></li>
+            <li class="second-level"><a href="#requirements">Requirements</a></li>
+                
+            <li class="second-level"><a href="#install">Install</a></li>
+                
+            <li class="second-level"><a href="#testing">Testing</a></li>
+                
+            <li class="second-level"><a href="#linting">Linting</a></li>
+                
+            <li class="second-level"><a href="#run-locally">Run locally</a></li>
+                
+            <li class="second-level"><a href="#commit-conventions">Commit conventions</a></li>
+                
+            <li class="second-level"><a href="#update-node-dependencies">Update node dependencies</a></li>
+                
+            <li class="second-level"><a href="#how-to-create-pull-requests">How to create pull requests</a></li>
+                
+            <li class="second-level"><a href="#releases">Releases</a></li>
+                
+                <li class="third-level"><a href="#publish-to-a-distribution-branch">Publish to a distribution branch</a></li>
+                <li class="third-level"><a href="#action-versioning">Action versioning</a></li>
+            <li class="second-level"><a href="#documentation">Documentation</a></li>
+                
+                <li class="third-level"><a href="#commands">Commands</a></li>
+                <li class="third-level"><a href="#project-layout">Project layout</a></li>
+    </ul>
+</div></div>
+        <div class="col-md-9" role="main">
+
+<h1 id="development">Development</h1>
+<p>You can read our <a href="https://github.com/Nautilus-Cyberneering/git-queue/blob/main/CONTRIBUTING.md">CONTRIBUTING</a> and <a href="https://github.com/Nautilus-Cyberneering/git-queue/blob/main/CODE_OF_CONDUCT.md">CODE_OF_CONDUCT</a> guides before star contributing.</p>
+<h2 id="requirements">Requirements</h2>
+<ul>
+<li>Node &gt;= 16.13.2.</li>
+<li>The action has only been tested with Linux.</li>
+<li>Make sure you do not alter the queue commits with destructive commands like <code>git --amend</code> or <code>git rebase</code>. In general, command that rewrite or reorganize commits could affect the queue integrity.</li>
+</ul>
+<h2 id="install">Install</h2>
+<p>Install with <code>yarn install</code>.</p>
+<h2 id="testing">Testing</h2>
+<ul>
+<li>Run all tests with <code>yarn test</code>.</li>
+<li>Run only unit tests with <code>yarn test-unit</code>.</li>
+<li>Run only unit tests with <code>yarn test-e2e</code>.</li>
+</ul>
+<h2 id="linting">Linting</h2>
+<ul>
+<li>Run <code>TypeScript</code> linter <code>yarn format &amp;&amp; yarn lint</code>.</li>
+</ul>
+<p>Run <a href="https://github.com/megalinter/megalinter">MegaLinter</a> locally:</p>
+<pre><code class="language-shell">mega-linter-runner -e 'ENABLE=MARKDOWN'
+</code></pre>
+<p>You can use the <code>-e</code> option to select the linters you want to execute.</p>
+<p>Build the typescript and package it for distribution <code>yarn build &amp;&amp; yarn package</code>.</p>
+<h2 id="run-locally">Run locally</h2>
+<p>You can run the app locally:</p>
+<pre><code class="language-shell">yarn run build &amp;&amp; \
+INPUT_QUEUE_NAME=&quot;queue-name&quot; \
+INPUT_ACTION=&quot;next-job&quot; \
+  node dist/index.js
+</code></pre>
+<p>Where inputs are environment variables with the prefix <code>INPUT_</code> and the input name in uppercase.</p>
+<p>You can run workflows locally with the <a href="https://github.com/nektos/act">act</a> app.</p>
+<h2 id="commit-conventions">Commit conventions</h2>
+<p><strong>General conventions</strong>:</p>
+<ul>
+<li>We follow <a href="https://www.conventionalcommits.org/en/v1.0.0/">Conventional Commits Specification</a>.</li>
+<li>When we integrate a new dependency or upgrade dependencies, each indivisible dependency change (update, remove, add) should have its own commit including:</li>
+<li>Updated <code>package.json</code> file.</li>
+<li>Updated <code>yarn.lock</code>.</li>
+<li>Regenerated <code>dist</code> directory.</li>
+<li>Updated documentation, if needed.</li>
+<li>Minimal changes to the code to accommodate the change in the dependencies.</li>
+<li>We require signed commits.</li>
+</ul>
+<p><strong>Conventions related to pull requests</strong>:</p>
+<ul>
+<li>We use merge commits.
+Make sure commits keep their signatures.</li>
+</ul>
+<p><strong>Conventions related to releases</strong>:</p>
+<ul>
+<li>Every commit should build the application with <code>yarn build &amp;&amp; yarn package</code> because every single commit should be executable on a third-party workflow and the action has to be already built in the <code>dist</code> folder.</li>
+</ul>
+<!-- markdownlint-disable-next-line MD013 -->
+<ul>
+<li>In some cases, commits are generated automatically, for example by the <code>dependabot</code> or <code>MegaLinter</code> (if enabled). Those bots do not build and package the action, so whoever is responsible for merging those commits should change them to include the built app. That could be very tedious work so very often could be more convenient just to re-create manually those changes including the built app (for example when you are updating some node packages at the same time). The same logic applies to signed commits (<code>dependabot</code> creates signed commits but <code>MegaLinter</code> does not), that's one of the reasons why auto-fix is not enabled for <code>MegaLinter</code>.</li>
+</ul>
+<!-- markdownlint-disable-next-line MD013 -->
+<ul>
+<li>For some commits, the <code>dist</code> folder might not be affected, which means if you run <code>yarn build &amp;&amp; yarn package</code> again the commit content for the <code>dist</code> folder is not going to change. In such cases, you could merge <code>dependabot</code> commits directly from the GitHub interface. That happens when <code>dependabot</code> upgrades an action in a workflow. In general, changes in the <code>.github</code> folder do not affect the <code>dist</code> folder.</li>
+</ul>
+<h2 id="update-node-dependencies">Update node dependencies</h2>
+<ul>
+<li>Dependencies updates should be in an independent branch, as any other code modification.</li>
+<li>We are reusing always the same <a href="https://github.com/Nautilus-Cyberneering/git-queue/issues/183">issue</a> and the same branch name(<code>issue-183-update-node-dependencies</code>) for dependencies update. That way we have a dependency update history (issue) and a consistent updates branch that can be used for automation.</li>
+<li>If a dependency breaks the code (i.e, does not compile or the tests do not pass), it should be solved in a separate, specific issue.</li>
+</ul>
+<p>Given everything, the process of dependencies updates would be as follows:</p>
+<p>General update (roughly once a week):</p>
+<ul>
+<li>Create the branch (using always the same name)</li>
+<li>Execute yarn upgrade --major</li>
+<li>Execute tests</li>
+<li>If tests do not pass or do not compile, exclude update that causes it to solve it a separate issue</li>
+<li>Create PR as usual</li>
+<li>Merge+rebase as usual</li>
+<li>Write a comment on the update issue to list all the <code>dependabot</code> PRs applied in this update iteration</li>
+<li>Affected <code>dependabot</code> PRs should be closed after applied, or close them manually</li>
+</ul>
+<p>If a security alert is warned by dependabot (critical security vulnerability) proceed immediately with the same workflow, but only with the update that patches it using a specific issue.</p>
+<p>For not critical updates we update them roughly once a week.</p>
+<blockquote>
+<p>NOTE: be aware of merging <code>dependabot</code> PRs directly using the GitHub interface. In some cases might produce <a href="https://github.com/Nautilus-Cyberneering/git-queue/discussions/205#discussioncomment-2731691">unverified commits</a>. When GitHub cannot sign the rebased commits.</p>
+</blockquote>
+<h2 id="how-to-create-pull-requests">How to create pull requests</h2>
+<p>In order to contribute you should follow the next steps:</p>
+<ol>
+<li>
+<p>Make sure there is an issue for your contribution. You can pick up one of the already-define issues or create a new issue describing what you want to implement, fix, ...</p>
+</li>
+<li>
+<p>Create a fork and a new branch following the branch name convention: <code>issue-XXX-short-description-or-issue-title-with-kebab-case-format</code></p>
+</li>
+<li>
+<p>Make your changes and commit them using <a href="https://www.conventionalcommits.org/en/v1.0.0/">Conventional Commits</a> format. Make sure you sign your commits.</p>
+</li>
+<li>
+<p>It is very important that all commits have a distribution package of the application. That means you should run always: <code>yarn install &amp;&amp; yarn build &amp;&amp; yarn package</code> before committing. That sometimes changes the content of the <code>dist</code> folder. Those changes should be included in the commit. That command is going to build the app but it's also going to test it and fix the TypeScript linting.</p>
+</li>
+<li>
+<p>The target branch for your pull request should be <code>develop</code>. Keep you branch rebased with <code>develop</code> branch.</p>
+</li>
+</ol>
+<p>Recommendations:</p>
+<ul>
+<li>If you do not run <a href="https://github.com/megalinter/megalinter">MegaLinter</a> locally, we recommend you to push each new commit to a draft pull request in order to be sure all checks pass for every commit. It could be quiet annoying try to fix all commits at the end, when you have finished the issue implementation.</li>
+<li>If you have a <a href="https://github.com/megalinter/megalinter">MegaLinter</a> error you can check the <a href="https://github.com/Nautilus-Cyberneering/git-queue/actions/workflows/mega-linter.yml">workflow log</a>. At the beginning of each linter processing you can see what MegaLinter is doing:</li>
+</ul>
+<pre><code class="language-s">[GitHub Status Reporter] Error posting Status for JAVASCRIPTwith standard: 403
+GitHub API response: {&quot;message&quot;:&quot;Resource not accessible by integration&quot;,&quot;documentation_url&quot;:&quot;https://docs.github.com/rest/reference/repos#create-a-commit-status&quot;}
+[Text Reporter] Generated TEXT report: /github/workspace/report/linters_logs/SUCCESS-JAVASCRIPT_STANDARD.log
+</code></pre>
+<p>And where to get more info about the linter is using and its configuration.</p>
+<p>You can also download the reports as an artifact.</p>
+<h2 id="releases">Releases</h2>
+<p>See <a href="#commit-conventions">commit conventions related to releases</a>.</p>
+<p>More info about releases in this <a href="https://github.com/Nautilus-Cyberneering/git-queue/discussions/152">discussion</a>.</p>
+<h3 id="publish-to-a-distribution-branch">Publish to a distribution branch</h3>
+<p>Actions are run from GitHub repos so we will check in the packed <code>dist</code> folder.</p>
+<p>Then run <a href="https://github.com/zeit/ncc">ncc</a> and push the results:</p>
+<pre><code class="language-bash">yarn package
+git add dist
+git commit -a -m &quot;prod dependencies&quot;
+git push origin releases/v1
+</code></pre>
+<blockquote>
+<p>Note: We recommend using the <code>--license</code> option for ncc, which will create a license file for all of the production node modules used in your project.</p>
+</blockquote>
+<p>Your action is now published!</p>
+<p>See the <a href="https://github.com/actions/toolkit/blob/master/docs/action-versioning.md">versioning documentation</a></p>
+<h3 id="action-versioning">Action versioning</h3>
+<p>After testing, you can <a href="https://github.com/actions/toolkit/blob/master/docs/action-versioning.md">create a v1 tag</a> to reference the stable and latest V1 action.</p>
+<h2 id="documentation">Documentation</h2>
+<p>We are using <a href="https://www.mkdocs.org/">MkDocs</a> for this documentation site.</p>
+<h3 id="commands">Commands</h3>
+<ul>
+<li><code>mkdocs serve</code> - Start the live-reloading docs server.</li>
+<li><code>mkdocs build</code> - Build the documentation site.</li>
+<li><code>mkdocs -h</code> - Print help message and exit.</li>
+<li><code>mkdocs gh-deploy -v --force</code> - Deploy to <a href="https://pages.github.com/">GitHub Pages</a>.</li>
+</ul>
+<p>You might see this error when you try to execute those commands:</p>
+<pre><code class="language-shell">$ mkdocs
+Command 'mkdocs' not found, but can be installed with:
+sudo apt install mkdocs
+</code></pre>
+<p>You can install it with:</p>
+<pre><code class="language-shell">pip install mkdocs
+</code></pre>
+<h3 id="project-layout">Project layout</h3>
+<pre><code class="language-text">    mkdocs.yml    # The configuration file.
+    docs/
+        index.md  # The documentation homepage.
+        ...       # Other markdown pages, images and other files.
+</code></pre></div>
+        
+        
+    </div>
+
+    
+      <footer class="col-md-12 text-center">
+          
+          
+            <hr>
+            <p>
+            <small>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</small>
+            </p>
+          
+
+          
+          
+      </footer>
+    
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="../js/bootstrap-3.0.3.min.js"></script>
+
+    
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/highlight.min.js"></script>
+        
+    <script>hljs.initHighlightingOnLoad();</script>
+    
+
+    <script>var base_url = ".."</script>
+    
+    <script src="../js/base.js"></script>
+    <script src="../search/main.js"></script>
+
+    <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                    <span class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    From here you can search these documents. Enter
+                    your search terms below.
+                </p>
+                <form>
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+    </body>
+
+</html>
