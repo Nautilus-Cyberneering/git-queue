@@ -33,7 +33,7 @@
     "@actions/exec": "^1.1.1",
     "ajv": "^8.11.0",
     "email-validator": "^2.0.4",
-    "simple-git": "^3.7.0"
+    "simple-git": "^3.11.0"
   },
   "devDependencies": {
     "@types/jest": "^28.1.1",
